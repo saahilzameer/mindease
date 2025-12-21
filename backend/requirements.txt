@@ -1,0 +1,6 @@
+chromadb==0.4.22
+google-generativeai==0.3.2
+numpy==1.24.3
+python-dotenv==1.0.0
+flask==3.0.0
+flask-cors==4.0.0

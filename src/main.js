@@ -135,7 +135,7 @@ async function processInput(text) {
 
   try {
     const genAI = new GoogleGenerativeAI(state.apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: SYSTEM_PROMPT });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", systemInstruction: SYSTEM_PROMPT });
 
     // Filter out initial MindEase greeting for history
     const history = state.messages.map(m => ({ role: m.role, parts: m.parts }));

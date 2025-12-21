@@ -107,13 +107,13 @@ const VoiceMode = ({ isOpen, onClose, systemPrompt, activeMode, allModes, onSele
             log("Connecting to Gemini...");
             const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash",
+                model: "gemini-2.0-flash",
                 systemInstruction: systemPrompt
             });
 
             chatSessionRef.current = model.startChat({ history: [] });
             setAiReady(true);
-            log("Gemini Connected (gemini-1.5-flash)");
+            log("Gemini Connected (gemini-2.0-flash)");
         } catch (e) {
             log(`GEMINI FAILED: ${e.message}`);
             log("Switching to Offline Fallback Mode");

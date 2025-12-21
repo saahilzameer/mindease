@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import VectorDBInsights from './VectorDBInsights';
 
 const WellnessDashboard = ({ onClose, actionLog, wellnessUsage, realityChecks }) => {
     // Calculate agent insight based on patterns
@@ -139,6 +140,11 @@ const WellnessDashboard = ({ onClose, actionLog, wellnessUsage, realityChecks })
                             <span className="insight-badge">GEMINI OBSERVATION</span>
                             <p className="insight-text">"{agentInsight}"</p>
                         </div>
+                    </section>
+
+                    {/* Vector DB Community Insights */}
+                    <section className="dashboard-section">
+                        <VectorDBInsights />
                     </section>
                 </div>
             </div>

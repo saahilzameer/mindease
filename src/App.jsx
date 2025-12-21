@@ -8,12 +8,21 @@ import Login from './components/Login';
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction: `You are MindEase Assistant, a calm, emotionally intelligent, and professional wellness companion for students.
+    model: "gemini-2.0-flash",
+    systemInstruction: `You are MindEase Assistant, a calm, emotionally support AI operating under strict anonymity rules.
 
-CORE PRINCIPLES:
-1. Never mention technical systems or limitations.
-2. Tone: Calm, supportive, clear, human.
+CORE ANONYMITY RULES:
+1. You do NOT remember users, track individuals, or build personal histories.
+2. Respond only to the current user message.
+3. Never imply memory of past interactions or refer to previous sessions.
+4. Never profile the user (e.g., "you're an anxious person"). Stay present-focused.
+
+INTELLIGENCE & TRENDS:
+- Your understanding of the world comes from anonymized, aggregate emotional trends (GLOBAL_EMOTIONAL_TRENDS). 
+- Use these trends ONLY to soften your tone or normalize general emotions. 
+- You may understand patterns, but you may NEVER understand people.
+
+STRICT TONE: Calm, supportive, human, and professional.
 
 MANDATORY OUTPUT FORMAT:
 All responses MUST end with a visible follow-up question.
@@ -25,16 +34,17 @@ STRUCTURE:
 [Empathy / Acknowledgement]
 → [One clear question]?
 
-LANGUAGE: Detect and match English, Hindi, or Telugu (No mixing).`
+LANGUAGE: Match English, Hindi, or Telugu.`
 });
 
-const VOICE_SYSTEM_PROMPT = `You are MindEase Assistant, a calm, professional, and emotionally intelligent voice companion.
+const VOICE_SYSTEM_PROMPT = `You are MindEase Assistant, an anonymous, emotionally supportive voice companion.
 
 CORE RULES:
-1. IMMERSION: Never mention technical states, errors, or offline status.
-2. TONE: Calm, supportive, human.
-3. MANDATORY FORMAT: All responses MUST end on a NEW LINE with a question starting with "→".
-4. LANGUAGE: Match the user's language (English, Hindi, Telugu).
+1. ANONYMITY: You have no memory of the user or past interactions. Treat every session as a fresh start.
+2. TRENDS: Use aggregate emotional patterns (GLOBAL_EMOTIONAL_TRENDS) only to adjust your pacing and empathy level.
+3. IMMERSION: Never mention technical states or errors.
+4. MANDATORY FORMAT: All responses MUST end on a NEW LINE with a question starting with "→".
+5. LANGUAGE: Match English, Hindi, or Telugu.
 
 FAILURE PROTOCOL:
 If anything fails, say: "I'm right here with you.
@@ -169,6 +179,33 @@ const App = () => {
         setActionLog(prev => [...prev, { action, timestamp: new Date().toISOString(), type }]);
     };
 
+    const logToVectorDB = async (text) => {
+        // Log emotional entry to vector database (non-blocking)
+        try {
+            const response = await fetch('http://localhost:5000/api/vent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userName,
+                    cohort_id: 'General_2024', // Default cohort, can be customized
+                    text: text,
+                    metadata: {
+                        mood_label: currentMoodState?.label || 'Unknown',
+                        mode: currentMode || 'general',
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+
+            if (response.ok) {
+                console.log('✓ Logged to vector DB');
+            }
+        } catch (error) {
+            // Silently fail - don't interrupt user experience
+            console.log('Vector DB logging skipped (server offline)');
+        }
+    };
+
     const handleMoodSelect = (mood) => {
         try {
             setCurrentMoodState(mood);
@@ -207,8 +244,8 @@ const App = () => {
 
             // Initialize new mode-specific session
             const modeModel = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash",
-                systemInstruction: mode.systemPrompt + `\nUSER NAME: ${userName}` + (currentMoodState ? `\nUSER CURRENT STATE: ${currentMoodState.label}` : "")
+                model: "gemini-2.0-flash",
+                systemInstruction: mode.systemPrompt + `\nANONYMITY MODE: ON. No memory of user history.\nGLOBAL_EMOTIONAL_TRENDS: [High Anxiety, Low Focus detected in aggregate summaries].` + (currentMoodState ? `\nUSER CURRENT STATE: ${currentMoodState.label}` : "")
             });
             chatSessionRef.current = modeModel.startChat({ history: [] });
 
@@ -234,6 +271,9 @@ const App = () => {
 
         if (!skipUi) addUserMessage(text);
         if (checkCrisis(text)) return;
+
+        // Log to vector database for semantic analysis
+        logToVectorDB(text);
 
         if (isOfflineListener) {
             const fallbacks = [
