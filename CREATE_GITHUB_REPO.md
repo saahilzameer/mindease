@@ -42,11 +42,11 @@ git remote add origin https://github.com/YOUR_USERNAME/mindease.git
 git push -u origin main
 ```
 
-**Based on your current login, your username appears to be: `prompttechies123`**
+**Based on your current login, your username appears to be: `saahilzameer`**
 
 So your commands would be:
 ```bash
-git remote add origin https://github.com/prompttechies123/mindease.git
+git remote add origin https://github.com/saahilzameer/mindease.git
 git push -u origin main
 ```
 
@@ -83,7 +83,7 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 
 3. Change remote to SSH:
 ```bash
-git remote set-url origin git@github.com:prompttechies123/mindease.git
+git remote set-url origin git@github.com:saahilzameer/mindease.git
 git push -u origin main
 ```
 
@@ -93,7 +93,7 @@ git push -u origin main
 
 After pushing, visit:
 ```
-https://github.com/prompttechies123/mindease
+https://github.com/saahilzameer/mindease
 ```
 
 You should see:
@@ -129,7 +129,7 @@ You should see:
 ### "Repository already exists"
 If you already created it, just add the remote:
 ```bash
-git remote add origin https://github.com/prompttechies123/mindease.git
+git remote add origin https://github.com/saahilzameer/mindease.git
 git push -u origin main
 ```
 
